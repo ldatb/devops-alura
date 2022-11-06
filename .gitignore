@@ -6,3 +6,6 @@
 # Key Pair files
 *.pem
 *.putty
+
+# Node_modules
+**/node_modules/*
