@@ -1,0 +1,43 @@
+---
+- name: Configurar AWS EC2 - DevOps Alura
+  hosts: terraform-ansible
+
+  tasks:
+  - name: Instalando python3 e virtualenv
+    become: yes
+    apt:
+      update_cache: yes
+      pkg:
+        - python3
+        - virtualenv
+
+  - name: Instalando dependencias pip
+    pip:
+      virtualenv: ~/venv
+      name:
+        - django
+        - djangorestframework
+
+  - name: Criando projeto django
+    shell: '. venv/bin/activate && django-admin startproject setup .'
+    ignore_errors: yes
+
+  - name: Autorizando hosts nas configuracoes do django
+    lineinfile:
+      path: ~/setup/settings.py
+      regexp: 'ALLOWED_HOSTS'
+      line: "ALLOWED_HOSTS: ['*']"
+      backrefs: yes
+  
+  - name: Iniciando projeto django
+    shell: '. venv/bin/activate && nohup python manage.py runserver 0.0.0.0:8000 &'
+
+#  tasks:
+#  - name: Criando o arquivo index.html
+#    copy: 
+#      dest: ~/index.html
+#      content: <h1>Ola Mundo</h1><h2>Feito com Terraform e Ansible</h2>
+#  - name: Atualizando repositorios e dependencias
+#    shell: "sudo apt-get -q update && sudo apt-get install -y busybox"
+#  - name: Criando servidor BuxyBox
+#    shell: "nohup busybox httpd -f -p 8080 &"
