@@ -8,3 +8,6 @@ Repositório das aulas da formação DevOps da Alura
 2. Crie o plano: `terraform plan`
    1. Você pode salvar o plano com `terraform plan -out <nome>`
 3. Aplique seu plano: `terraform apply`
+
+### Ansible
+`ansible-playbook <playbook> -u <username> --private-key <key-file> -i <hosts-file>`
