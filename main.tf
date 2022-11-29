@@ -14,7 +14,28 @@ provider "aws" {
   region = "us-east-1"
 }
 
-resource "aws_instance" "learning-devops-alura" {
+resource "aws_security_group" "learning-devops-security-group" {
+  name = "learning-devops-security-group"
+  ingress{
+    cidr_blocks = [ "0.0.0.0/0" ]
+    ipv6_cidr_blocks = [ "::/0" ]
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+  }
+  egress{
+    cidr_blocks = [ "0.0.0.0/0" ]
+    ipv6_cidr_blocks = [ "::/0" ]
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+  }
+  tags = {
+    Name = "learning-devops-security-group"
+  }
+}
+
+resource "aws_instance" "learning-devops-instance" {
   ami = "ami-09a41e26df464c548"
   instance_type = "t2.micro"
   key_name = "learning-terraform"
@@ -30,4 +51,8 @@ resource "aws_instance" "learning-devops-alura" {
   tags = {
     Name = "DevOps-Alura-AWS"
   }
+}
+
+output "ip_addr" {
+  value = aws_instance.learning-devops-instance.public_ip
 }
