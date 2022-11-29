@@ -57,6 +57,18 @@ resource "aws_autoscaling_group" "autoscaller" {
   target_group_arns = [ aws_lb_target_group.load_balance_target_group.arn ]
 }
 
+resource "aws_autoscaling_policy" "autoscaller_policy" {
+  name = "scalling"
+  autoscaling_group_name = aws_autoscaling_group.autoscaller.name
+  policy_type = "TargetTrackingScaling"
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ASGAverageCPUUtilization"
+    }
+    target_value = 90.0
+  }
+}
+
 resource "aws_default_subnet" "subnet_zone_a" {
   availability_zone = "${aws_provider.region}a"
 }
@@ -70,15 +82,6 @@ resource "aws_lb" "load_balance" {
   subnets = [aws_default_subnet.subnet_zone_a.id, aws_default_subnet.subnet_zone_b.id]
 }
 
-resource "aws_lb_target_group" "load_balance_target_group" {
-  name = "target_machines"
-  port = "8000"
-  protocol = "HTTP"
-  vpc_id = aws_default_vpc.default_vpc.id
-}
-
-resource "aws_default_vpc" "default_vpc" {}
-
 resource "aws_lb_listener" "load_balance_listener" {
   load_balancer_arn = aws_lb.load_balance.arn
   port = "8000"
@@ -88,6 +91,15 @@ resource "aws_lb_listener" "load_balance_listener" {
     target_group_arn = aws_lb_target_group.load_balance_target_group.arn
   }
 }
+
+resource "aws_lb_target_group" "load_balance_target_group" {
+  name = "target_machines"
+  port = "8000"
+  protocol = "HTTP"
+  vpc_id = aws_default_vpc.default_vpc.id
+}
+
+resource "aws_default_vpc" "default_vpc" {}
 
 # resource "aws_instance" "learning-devops-instance" {
 #   ami = "ami-09a41e26df464c548"
